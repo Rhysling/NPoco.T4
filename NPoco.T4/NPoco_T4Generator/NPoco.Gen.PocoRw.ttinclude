@@ -1,0 +1,51 @@
+﻿<#+
+//
+void MakePocoRw(Table tbl)
+{
+	string autoIncrement = tbl.PK[0].IsAutoIncrement ? "true" : "false";
+																													 
+#>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using NPoco;
+
+namespace <#=Namespace #>
+{
+	[TableName("<#=tbl.Name#>")]
+<#+ if (tbl.PK != null) { #>
+	[PrimaryKey("<#=String.Join(", ",tbl.PK.Select(x => x.Name))#>", <#=autoIncrement#>)]
+<#+ } #>
+	[ExplicitColumns]
+	public partial class <#=tbl.ClassName#> <#+ if (GenerateOperations) { #>: <#=RepoName#>.Record<<#=tbl.ClassName#>><#+ }  if (tbl.PK!=null && tbl.PK[0].Name=="Id") { if (tbl.PK[0].IsAutoIncrement){ #>, Repositories.Core.IIdentity<#+ } else { #>, Repositories.Core.IKeyed<<#= tbl.PK[0].PropertyType#>><#+ } } #>
+
+	{
+<#+
+	foreach(Column col in from c in tbl.Columns where !c.Ignore select c)
+	{
+		// Column bindings
+#>
+
+<#+ if (col.Name!=col.PropertyName) { #>
+		[NPoco.Column("<#=col.Name#>")] 
+<#+ } else { #>
+		[NPoco.Column] 
+<#+ }  #>
+<#+ if ((col.PropertyType == "string") && (col.StringLength > 0)) { #>
+		[StringLength(<#=col.StringLength #>)]
+<#+ if (!col.IsNullable) { #>
+		[Required()]
+<#+ } #>
+<#+ } #>
+		public <#=col.PropertyType #><#=CheckNullable(col)#> <#=col.PropertyName #> { get; set; }
+		
+<#+ } // End - ForEach Column
+#>	}
+}
+<#+
+	SaveOutput(GetEntityFullPath(tbl, EntityType.PocoRw));
+}
+#>

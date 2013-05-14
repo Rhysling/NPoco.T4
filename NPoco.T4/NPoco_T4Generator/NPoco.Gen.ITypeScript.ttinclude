@@ -1,0 +1,55 @@
+﻿<#+
+//
+void MakeITypeScript(List<Table> tables)
+{
+#>
+/**********  TypeScript Interfaces Generated from Models  **********/
+
+<#+
+	var tbls = tables.Where(a=> a.Ignore == false).OrderBy(t => t.ClassName);
+	foreach (Table tbl in tbls)
+	{
+#>
+interface I<#=tbl.ClassName #> {
+<#+
+		foreach (Column col in tbl.Columns.Where(c => !c.Ignore))
+		{
+#>
+	<#=CamelCase(col.PropertyName)#><#=col.IsNullable ? "?" : ""#> : <#=GetTsType(col.PropertyType)#>;
+<#+ }  #>
+}
+
+<#+
+	}
+
+	SaveOutput(GetEntityFullPath(null, EntityType.ITypeScript));
+} // end function
+
+
+	/******************  Private Functions  ******************/
+
+		// System to Ts Types
+		private static Dictionary<string, string> typeDict = new Dictionary<string, string> 
+		{
+			{ "bool", "bool" },
+			{ "double", "number" },
+			{ "int", "number" },
+			{ "single", "number" },
+			{ "string", "string" },
+			{ "DateTime", "any" }
+		};
+
+		private static string GetTsType(string netType)
+		{
+			string res;
+			return typeDict.TryGetValue(netType, out res) ? res : "any";
+		}
+
+		private static string CamelCase(string strIn)
+		{
+			if (String.IsNullOrWhiteSpace(strIn)) { return ""; }
+			strIn = strIn.Trim();
+			if (strIn.Length == 1) { return strIn.ToLower(); }
+			return Char.ToLower(strIn[0]).ToString() + strIn.Substring(1);
+		}
+#>

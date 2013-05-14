@@ -1,0 +1,138 @@
+﻿<#@ include file="NPoco.Core.ttinclude" #>
+<#
+	 // Settings ********************************
+	ApplicationName = "MyApp";
+	ConnectionStringName = "ConStr_Primary";
+
+	Namespace = ApplicationName + ".Models";
+	RepositoryNamespace = ApplicationName + ".Repositories";
+	RepoName = ApplicationName + "DB";
+
+	ClassPrefix = "";
+	ClassSuffix = "";
+	
+	GenerateOperations = true;
+
+	GenerateEnums = true;
+	OverwriteEnums = true;
+
+	GeneratePocos = true;
+	OverwriteRwPocos = true;
+	OverwriteRoPocos = true;
+
+	GenerateRepos = true;
+	OverwriteRepos = true;
+
+	GenerateTypeScriptInterfaces = true;
+	OverwriteTypeScriptInterfaces = true;
+	
+	DefaultToExcludeTables = false;
+	
+	// Check directories are created ***
+	CheckOutputDirectories();
+
+	//Debugger.Break();
+
+	// Read schema
+	var tables = LoadTables();
+	
+/*
+	// Tweak Schema
+	tables["tablename"].Ignore = true;												// To ignore a table
+	tables["tablename"].ClassName = "newname";								// To change the class name of a table
+	tables["tablename"]["columnname"].Ignore = true;					// To ignore a column
+	tables["tablename"]["columnname"].PropertyName="newname";	// To change the property name of a column
+	tables["tablename"]["columnname"].PropertyType="bool";		// To change the property type of a column
+*/	
+
+
+	// Force Enums from specified tables
+	ForceEnumList = new List<ForceEnum>();
+
+	ForceEnumList = new List<ForceEnum>{
+		new ForceEnum {
+			TableName = "ListObjects",
+			EnumName = "ListObjectsEnum",
+			EnumNameColumnName = "ShortName",
+			EnumValueColumnName = "Id",
+			EnumDescriptionColumnName = "Description"
+		}
+	};
+	
+	
+	// Generate output
+	if (tables.Count > 0)
+	{
+		foreach(Table tbl in tables.Where(a=> a.Ignore == false))
+		{
+			bool makeEnum = false;	 
+			var fe = ForceEnumList.Where(a => a.TableName == tbl.Name).FirstOrDefault();
+			if (fe != null)
+			{
+				tbl.EnumName = String.IsNullOrEmpty(fe.EnumName) ? tbl.EnumName : fe.EnumName;
+				makeEnum = true;
+			}
+			else
+			{
+				fe = new ForceEnum();
+				makeEnum = tbl.IsEnum;
+			}
+
+			bool isRw = (tbl.PK != null && tbl.PK.Any());
+			
+			
+			if (GenerateEnums && makeEnum && DoCreateEntity(tbl, EntityType.Enum))
+			{
+				MakeEnum(tbl, fe.EnumNameColumnName, fe.EnumValueColumnName, fe.EnumDescriptionColumnName);
+			}
+
+			if (GeneratePocos)
+			{
+				if (isRw && DoCreateEntity(tbl, EntityType.PocoRw))
+				{
+					MakePocoRw(tbl);
+				}
+				else if (!isRw && DoCreateEntity(tbl, EntityType.PocoRo))
+				{
+					MakePocoRo(tbl);
+				}
+			}
+
+			if (GenerateRepos)
+			{
+			 if (isRw && DoCreateEntity(tbl, EntityType.RepoRw))
+				{
+					if (tbl.PK[0].IsAutoIncrement)
+					{
+						MakeRepoIdentity(tbl);
+					}
+					else
+					{
+						MakeRepoKeyed(tbl);
+					}
+				}
+				else if (!isRw && DoCreateEntity(tbl, EntityType.RepoRo))
+				{
+					MakeRepoNoKey(tbl);
+				}
+			}
+		} // end foreach
+
+
+		if (GenerateTypeScriptInterfaces && DoCreateEntity(null, EntityType.ITypeScript))
+			MakeITypeScript(tables);
+
+
+	} // end if
+	
+	MakeOperations();
+	
+#>
+<#@ include file="NPoco.Gen.Enum.ttinclude" #>
+<#@ include file="NPoco.Gen.PocoRw.ttinclude" #>
+<#@ include file="NPoco.Gen.PocoRo.ttinclude" #>
+<#@ include file="NPoco.Gen.RepoIdentity.ttinclude" #>
+<#@ include file="NPoco.Gen.RepoKeyed.ttinclude" #>
+<#@ include file="NPoco.Gen.RepoNoKey.ttinclude" #>
+<#@ include file="NPoco.Gen.ITypeScript.ttinclude" #>
+<#@ include file="NPoco.Gen.Ops.ttinclude" #>

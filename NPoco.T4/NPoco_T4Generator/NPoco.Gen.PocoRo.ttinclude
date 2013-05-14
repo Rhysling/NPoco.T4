@@ -1,0 +1,45 @@
+﻿<#+
+//
+	void MakePocoRo(Table tbl)
+	{
+#>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using NPoco;
+
+namespace <#=Namespace #>
+{
+	[TableName("<#=tbl.Name#>")]
+	[ExplicitColumns]
+	public partial class <#=tbl.ClassName#> <#+ if (GenerateOperations)
+ { #>: <#=RepoName#>.Record<<#=tbl.ClassName#>><#+ } #>
+
+	{
+<#+
+ foreach (Column col in from c in tbl.Columns where !c.Ignore select c)
+ {
+	// Column bindings
+#>
+
+<#+ if (col.Name != col.PropertyName)
+ { #>
+		[NPoco.Column("<#=col.Name#>")] 
+<#+ }
+ else
+ { #>
+		[NPoco.Column] 
+<#+ }  #>
+		public <#=col.PropertyType #><#=CheckNullable(col)#> <#=col.PropertyName #> { get; set; }
+
+<#+
+} // End - ForEach Column
+#>	}
+}
+<#+
+	  SaveOutput(GetEntityFullPath(tbl, EntityType.PocoRo));
+	} // End function
+#>

@@ -1,0 +1,41 @@
+﻿<#+
+//
+void MakeRepoNoKey(Table tbl)
+{
+#>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using NPoco;
+using <#=ApplicationName #>.Models;
+
+namespace <#=RepositoryNamespace #>
+{ 
+	public class <#= tbl.RepoName #>
+	{
+		private NPoco.Database db = new NPoco.Database(Services.AppSettings.ConnectionString, DatabaseType.SqlServer2008) { Mapper = new Core.CustomTypeMapper() };
+
+		public IEnumerable<<#= tbl.ClassName #>> All()
+		{
+			return db.Fetch<<#= tbl.ClassName #>>(" ");
+		}
+
+		//Example - filtered list:
+		public IEnumerable<<#= tbl.ClassName #>> FilteredList(string str1, string str2)
+		{
+			return db.Fetch<<#= tbl.ClassName #>>("WHERE (v1=@p1) AND (v2=@p2)", new {p1 = str1, p2 = str2});
+		}
+		
+		//Example - paged & filtered list:
+		public Page<<#= tbl.ClassName #>> PagedFilteredList(string str1, string str2, long page, long itemsPerPage)
+		{
+			return db.Page<<#= tbl.ClassName #>>(page, itemsPerPage, "WHERE (v1=@p1) AND (v2=@p2)", new {p1 = str1, p2 = str2});
+		}
+
+		// More methods here ***
+	}
+}	
+<#+
+	SaveOutput(GetEntityFullPath(tbl, EntityType.RepoRo));
+} // End Function
+#>
