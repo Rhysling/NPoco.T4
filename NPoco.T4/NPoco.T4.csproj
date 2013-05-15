@@ -50,7 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Core\CustomTypes\SampleCustomModel.cs" />
+    <Compile Include="Models\Core\CustomTypes\EquivalentTypeForTestingAttribute.cs" />
+    <Compile Include="Models\Core\CustomTypes\ISelfValidating.cs" />
+    <Compile Include="Models\Core\CustomTypes\SampleCustomType.cs" />
     <Compile Include="Models\Generated\Enums\ListObjectsEnum.cs" />
     <Compile Include="Models\Generated\PocosRo\NoKeyNonDistinctObject.cs" />
     <Compile Include="Models\Generated\PocosRw\CompositeKeyObject.cs" />
@@ -58,10 +60,12 @@
     <Compile Include="Models\Generated\PocosRw\KeyedGuidObject.cs" />
     <Compile Include="Models\Generated\PocosRw\KeyedIntObject.cs" />
     <Compile Include="Models\Generated\PocosRw\ListObject.cs" />
+    <Compile Include="Models\Generated\PocosRw\ObjectsWithCustomType.cs" />
     <Compile Include="NPoco_T4Generator\_NPocoT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
       <DependentUpon>_NPocoT4.tt</DependentUpon>
+      <SubType>Code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -75,6 +79,7 @@
     <Compile Include="Repositories\Generated\Rw\KeyedGuidObjectDb.cs" />
     <Compile Include="Repositories\Generated\Rw\KeyedIntObjectDb.cs" />
     <Compile Include="Repositories\Generated\Rw\ListObjectDb.cs" />
+    <Compile Include="Repositories\Generated\Rw\ObjectsWithCustomTypeDb.cs" />
     <Compile Include="Services\AppSettings.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -57,3 +57,9 @@ interface INoKeyNonDistinctObject {
 	color? : string;
 }
 
+interface IObjectsWithCustomType {
+	id : number;
+	name? : string;
+	mySpecialTypeField? : any;
+}
+

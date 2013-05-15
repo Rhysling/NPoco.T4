@@ -11,6 +11,7 @@ using NPoco.T4.Tests.Common;
 using NPoco.T4.Tests.Common.SqlSchema;
 
 using MyApp.Models;
+using MyApp.Models.Core;
 using MyApp.Repositories;
 using MyApp.Repositories.Core;
 
@@ -171,6 +172,13 @@ namespace NPoco.T4.Tests.Tests
 									col.PropertyType = TypeMap.CommonSystemTypeFromFrameworkType(p.PropertyType.ToString());
 									col.IsNullable = col.PropertyType.EndsWith("?");
 									col.IsAutoIncrement = col.IsPK && tbl.IsAutoIncrement;
+								}
+
+								if (patr is EquivalentTypeForTestingAttribute)
+								{
+									var ca = patr as EquivalentTypeForTestingAttribute;
+									col.PropertyType = ca.Name;
+									col.IsNullable = col.PropertyType.EndsWith("?");
 								}
 							}
 

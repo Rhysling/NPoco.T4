@@ -10,7 +10,7 @@ namespace MyApp.Models.Core
 	// Just an example of a custom model type for binding.
 	// This is a safe, non-null date with some magic year values.
 
-	public struct SampleCustomModel : ISelfValidating
+	public struct SampleCustomType : ISelfValidating
 	{
 		// Note:
 		// Year <= 1910 -> Empty
@@ -24,13 +24,13 @@ namespace MyApp.Models.Core
 
 		// Constructors
 
-		public SampleCustomModel(DateTime inp)
+		public SampleCustomType(DateTime inp)
 		{
 			dt = inp;
 			inputString = "";
 		}
 
-		public SampleCustomModel(DateTime? inp)
+		public SampleCustomType(DateTime? inp)
 		{
 			if (inp == null)
 			{
@@ -43,7 +43,7 @@ namespace MyApp.Models.Core
 			inputString = "";
 		}
 
-		public SampleCustomModel(string inp)
+		public SampleCustomType(string inp)
 		{
 			dt = new DateTime(1900, 1, 15);
 			inputString = "";
@@ -205,22 +205,6 @@ namespace MyApp.Models.Core
 		Empty = 4
 	}
 
-	public interface ISelfValidating
-	{
-		bool IsValid { get; }
-		string ErrorMessage { get; }
-	}
-
-	[AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-	public class SelfValidationAttribute : ValidationAttribute
-	{
-		protected override ValidationResult IsValid(object value, ValidationContext validationContext)
-		{
-			var obj = (ISelfValidating)value;
-
-			if (!obj.IsValid) return new ValidationResult(obj.ErrorMessage);
-			return ValidationResult.Success;
-		}
-	}
+	
 
 }

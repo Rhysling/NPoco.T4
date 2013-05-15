@@ -13,18 +13,18 @@ namespace MyApp.Repositories.Core
 
 		public override Func<object, object> GetFromDbConverter(Type DestType, Type SourceType)
 		{
-			if (DestType == typeof(SampleCustomModel))
+			if (DestType == typeof(SampleCustomType))
 			{
-				return x => new SampleCustomModel((DateTime)x);
+				return x => new SampleCustomType((DateTime)x);
 			}
 			return base.GetFromDbConverter(DestType, SourceType);
 		}
 
 		public override Func<object, object> GetToDbConverter(Type DestType, Type SourceType)
 		{
-			if (SourceType == typeof(SampleCustomModel))
+			if (SourceType == typeof(SampleCustomType))
 			{
-				return x => ((SampleCustomModel)x).Value;
+				return x => ((SampleCustomType)x).Value;
 			}
 			return base.GetToDbConverter(DestType, SourceType);
 		}

@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NPoco.T4.Tests.Common.TestDatabase;
 using MyApp.Models;
@@ -18,7 +19,12 @@ namespace NPoco.T4.Tests.Tests
 		{
 			TestDatabase.Initialize();
 
-			string logFilePath = Environment.ExpandEnvironmentVariables("%userprofile%") + @"\Documents\Visual Studio 2012\Projects\NPoco.T4\NPoco.T4.Tests\TraceResult.log";
+			string logFilePath = ConfigurationManager.AppSettings["LogFilePath"];
+			if (String.IsNullOrEmpty(logFilePath)) throw new Exception("Log File Path Missing");
+
+			if (!Regex.IsMatch(logFilePath, "^[a-zA-Z]:", RegexOptions.IgnoreCase))
+				logFilePath = Path.Combine(Regex.Replace(Environment.CurrentDirectory, @"bin\\(?:(?:debug)|(?:release))\\?$", "", RegexOptions.IgnoreCase), logFilePath);
+			
 			logFile = new FileStream(logFilePath, FileMode.OpenOrCreate, FileAccess.Write);
 			TextWriterTraceListener myListener = new TextWriterTraceListener(logFile);
 			Trace.Listeners.Add(myListener);

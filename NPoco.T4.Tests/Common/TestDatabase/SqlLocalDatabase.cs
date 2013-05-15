@@ -166,6 +166,19 @@ namespace NPoco.T4.Tests.Common.TestDatabase
 			";
 			cmd.ExecuteNonQuery();
 
+			cmd.CommandText = @"
+					CREATE TABLE [dbo].[ObjectsWithCustomType](
+						[Id] [int] NOT NULL,
+						[Name] [varchar](200) NULL,
+						[MySpecialTypeField] [date] NULL
+					PRIMARY KEY CLUSTERED 
+					(
+						[Id] ASC
+					) WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+					) ON [PRIMARY]
+			";
+			cmd.ExecuteNonQuery();
+
 			cmd.Dispose();
 			conn.Close();
 			conn.Dispose();

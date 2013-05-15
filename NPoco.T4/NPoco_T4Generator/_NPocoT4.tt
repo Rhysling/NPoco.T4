@@ -45,6 +45,12 @@
 	tables["tablename"]["columnname"].PropertyType="bool";		// To change the property type of a column
 */	
 
+	// Ignore the ObjectsWithCustomType table (We made that POCO by hand and left it in to test custom type value binding.)
+	// try/catch because the table may not exist.
+	try {
+		tables["ObjectsWithCustomType"].Ignore = false;
+	}
+	catch {}
 
 	// Force Enums from specified tables
 	ForceEnumList = new List<ForceEnum>();
