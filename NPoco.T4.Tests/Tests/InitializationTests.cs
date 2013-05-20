@@ -64,6 +64,8 @@ namespace NPoco.T4.Tests.Tests
 			string resNKNDO = TestData.VerifyRecordCountMatchForPocoType(typeof(NoKeyNonDistinctObject), TestDatabase.Db);
 			Assert.IsTrue(resNKNDO.Length == 0, resNKNDO);
 
+			string resOWCT = TestData.VerifyRecordCountMatchForPocoType(typeof(ObjectsWithCustomType), TestDatabase.Db);
+			Assert.IsTrue(resOWCT.Length == 0, resOWCT);
 		}
 	}
 }

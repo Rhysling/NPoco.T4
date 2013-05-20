@@ -6,7 +6,7 @@ using MyApp.Models;
 
 namespace MyApp.Repositories
 { 
-	public class ObjectsWithCustomTypeDb : Repositories.Core.IKeyedRepository<int, ObjectsWithCustomType>	{
+	public class ObjectsWithCustomTypeDb : Repositories.Core.IKeyedRepository<string, ObjectsWithCustomType>	{
 		private NPoco.Database db = new NPoco.Database(Services.AppSettings.ConnectionString, DatabaseType.SqlServer2008) { Mapper = new Core.CustomTypeMapper() };
 
 		public bool Insert(ObjectsWithCustomType entity)
@@ -21,31 +21,31 @@ namespace MyApp.Repositories
 			return true;
 		}
 
-		public bool Delete(int id)
+		public bool Delete(string id)
 		{
-			db.Delete<ObjectsWithCustomType>(id);
+			db.Delete<ObjectsWithCustomType>((object)id);
 			return true;
 		}
 
-		public bool Delete(IEnumerable<int> ids)
+		public bool Delete(IEnumerable<string> ids)
 		{
-			foreach (int id in ids)
+			foreach (string id in ids)
 			{
 				db.Delete<ObjectsWithCustomType>(id);
 			}
 			return true;
 		}
 
-		public bool Destroy(int id)
+		public bool Destroy(string id)
 		{
-			db.Delete<ObjectsWithCustomType>(id);
+			db.Delete<ObjectsWithCustomType>((object)id);
 			return true;
 		}
 
 
-		public ObjectsWithCustomType FindBy(int id)
+		public ObjectsWithCustomType FindBy(string id)
 		{
-			return db.SingleOrDefaultById<ObjectsWithCustomType>(id);
+			return db.SingleOrDefaultById<ObjectsWithCustomType>((object)id);
 		}
 
 		public IEnumerable<ObjectsWithCustomType> All()
@@ -53,9 +53,9 @@ namespace MyApp.Repositories
 			return db.Fetch<ObjectsWithCustomType>(" ");
 		}
 
-		public int MaxId()
+		public string MaxId()
 		{
-			return db.Single<int>("SELECT MAX(Id) FROM [ObjectsWithCustomType]");
+			return db.Single<string>("SELECT MAX(Id) FROM [ObjectsWithCustomType]");
 		}
 	}
 }	

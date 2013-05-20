@@ -168,7 +168,7 @@ namespace NPoco.T4.Tests.Common.TestDatabase
 
 			cmd.CommandText = @"
 					CREATE TABLE [dbo].[ObjectsWithCustomType](
-						[Id] [int] NOT NULL,
+						[Id] [varchar](20) NOT NULL,
 						[Name] [varchar](200) NULL,
 						[MySpecialTypeField] [date] NULL
 					PRIMARY KEY CLUSTERED 

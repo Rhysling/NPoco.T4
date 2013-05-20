@@ -58,7 +58,7 @@ interface INoKeyNonDistinctObject {
 }
 
 interface IObjectsWithCustomType {
-	id : number;
+	id : string;
 	name? : string;
 	mySpecialTypeField? : any;
 }

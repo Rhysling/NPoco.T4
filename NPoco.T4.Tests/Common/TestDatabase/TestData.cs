@@ -18,6 +18,7 @@ namespace NPoco.T4.Tests.Common.TestDatabase
 		public static List<KeyedIntObject> InMemoryKeyedIntObjects { get; set; }
 		public static List<ListObject> InMemoryListObjects { get; set; }
 		public static List<NoKeyNonDistinctObject> InMemoryNoKeyNonDistinctObjects { get; set; }
+		public static List<ObjectsWithCustomType> InMemoryObjectsWithCustomType { get; set; }
 
 		public static void RecreateData(NPoco.Database db)
 		{
@@ -27,6 +28,7 @@ namespace NPoco.T4.Tests.Common.TestDatabase
 			InMemoryKeyedIntObjects = new List<KeyedIntObject>();
 			InMemoryListObjects = new List<ListObject>();
 			InMemoryNoKeyNonDistinctObjects = new List<NoKeyNonDistinctObject>();
+			InMemoryObjectsWithCustomType = new List<ObjectsWithCustomType>();
 
 			// Clear out any old items
 			db.Execute("TRUNCATE TABLE CompositeKeyObjects;");
@@ -104,7 +106,17 @@ namespace NPoco.T4.Tests.Common.TestDatabase
 				};
 				db.Insert(nkndo);
 				InMemoryNoKeyNonDistinctObjects.Add(nkndo);
+
+				var owct = new ObjectsWithCustomType
+				{
+					Id = "StringId_" + pos.ToString(),
+					Name = "Blah",
+					MySpecialTypeField = new DateTime(1925 + pos, 2, 15)
+				};
+				db.Insert(owct);
+				InMemoryObjectsWithCustomType.Add(owct);
 			}
+
 
 			InMemoryListObjects.Add(new ListObject { 
 				Id = 1,
@@ -160,10 +172,10 @@ namespace NPoco.T4.Tests.Common.TestDatabase
 		public static string VerifyRecordCountMatchForPocoType(Type pocoType, NPoco.Database db)
 		{
 			if (db == null) return "No database. Run RecreateData";
+			string tableName = pocoType.Name + (pocoType.Name.StartsWith("Objects") ? "" : "s");
 
-			string t = pocoType.Name;
 			//InMemoryCompositeKeyObjects
-			var imList = typeof(TestData).GetProperty("InMemory" + t + "s").GetValue(null, null);
+			var imList = typeof(TestData).GetProperty("InMemory" + tableName).GetValue(null, null);
 
 			int imCount = 0;
 			if (imList is IEnumerable)
@@ -175,10 +187,10 @@ namespace NPoco.T4.Tests.Common.TestDatabase
 				}
 			}
 
-			int dbCount = db.ExecuteScalar<int>("SELECT COUNT(*) FROM " + t + "s;");
+			int dbCount = db.ExecuteScalar<int>("SELECT COUNT(*) FROM " + tableName + ";");
 
-			if (imCount != dbCount) return " For test of " + t + ": In Memory Count = " + imCount + "; but Db Count = " + dbCount;
-			if (imCount == 0) return " For test of " + t + ": In Memory and Db have no items."; 
+			if (imCount != dbCount) return " For test of " + tableName + ": In Memory Count = " + imCount + "; but Db Count = " + dbCount;
+			if (imCount == 0) return " For test of " + tableName + ": In Memory and Db have no items."; 
 			return "";
 		}
 
